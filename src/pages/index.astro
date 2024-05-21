@@ -1,17 +1,18 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ClosestMotoGPEvent from '../components/ClosestMotoGPEvent.jsx';
+
+import Classification from '../sections/Classification.astro';
+import Footer from '../sections/footer.astro';
+import NextEvent from '../sections/NextEvent.astro';
+import Title from '../sections/title.astro';
 ---
 
-<html>
-  <head>
-    <title>MotoGP Closest Event</title>
-  </head>
-  <body>
-    <main>
-      <ClosestMotoGPEvent client:load/>
-    </main>
-  </body>
-</html>
-
-
+<Layout title="MotoGP Closest Event">
+  <main>
+    <Title title="Closest MotoGP Event" />
+    <NextEvent/>
+    <Classification/>
+  </main>
+  <Footer />
+</Layout>

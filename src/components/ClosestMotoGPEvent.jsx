@@ -7,7 +7,6 @@ const ClosestMotoGPEvent = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log('Component mounted, fetching events...');
     const fetchEvents = async () => {
       try {
         const response = await fetch('https://api.micheleberardi.com/racing/v1.0/motogp-events?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9&year=2024');
@@ -16,7 +15,6 @@ const ClosestMotoGPEvent = () => {
           throw new Error(`Network response was not ok: ${response.statusText}`);
         }
         const data = await response.json();
-        console.log('Data fetched:', data);
         const events = data;
 
         if (!Array.isArray(events) || events.length === 0) {
@@ -46,19 +44,19 @@ const ClosestMotoGPEvent = () => {
   }, []);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <p class="text-white">Loading...</p>;
   }
 
   if (error) {
-    return <p>Error: {error}</p>;
+    return <p class="text-white">Error: {error}</p>;
   }
 
   if (!closestEvent) {
-    return <p>No upcoming events found.</p>;
+    return <p class="text-white">No upcoming events found.</p>;
   }
 
   return (
-    <div>
+    <div class="text-black">
       <h1>Closest MotoGP Event</h1>
       <h2>{closestEvent.name}</h2>
       <p>Date: {new Date(closestEvent.date_start).toLocaleDateString()} - {new Date(closestEvent.date_end).toLocaleDateString()}</p>
