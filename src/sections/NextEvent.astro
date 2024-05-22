@@ -85,7 +85,7 @@ function formatHour(dateString : any) {
                     <p class="text-4xl text-red-500">{isSameWeek ? "RACE WEEK" : ""}</p>
                 </div>
                 <div class="flex flex-col text-center items-center md:border-l flex-1 p-4 md:h-full w-full">
-                    <p class="text-white text-lg">FP1: TEST  {formatHour(fp1?.start_datetime_local)} </p>
+                    <p class="text-white text-lg">FP1: {formatHour(fp1?.start_datetime_local)} </p>
                     <p class="text-white text-lg">FP2: {formatHour(fp2?.start_datetime_local)}</p>
                     <p class="text-white text-lg">Q1: {formatHour(q1?.start_datetime_local)}</p>
                     <p class="text-white text-lg">Q2: {formatHour(q2?.start_datetime_local)}</p>
