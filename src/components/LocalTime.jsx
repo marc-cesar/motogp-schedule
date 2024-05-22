@@ -2,17 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 
-const LocalTime = ({ dateString, className }) => {
+const LocalTime = ({ dateString, className,onlyDate = false }) => {
   const [formattedDate, setFormattedDate] = useState('');
 
   useEffect(() => {
-    setFormattedDate(formatDateToLocalTime(dateString));
+    console.log(onlyDate)
+    setFormattedDate(formatDateToLocalTime(dateString, onlyDate));
   }, [dateString]);
 
   return <span className={className}>{formattedDate}</span>;
 };
 
-function formatDateToLocalTime(dateString) {
+function formatDateToLocalTime(dateString, onlyDate = false) {
     // Parse the date string into a Date object
     const date = new Date(dateString);
   
@@ -23,6 +24,10 @@ function formatDateToLocalTime(dateString) {
     const day = padZero(date.getDate());
     const month = padZero(date.getMonth() + 1); // Months are zero-based
     const year = date.getFullYear();
+
+    if(onlyDate){
+        return `${day}/${month}/${year}`;
+    }
   
     // Get local time components
     const hours = padZero(date.getHours());
