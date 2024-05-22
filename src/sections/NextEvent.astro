@@ -42,8 +42,7 @@ const race = mainEvents.find((session : any) => session.session_short_name === '
 
 console.log(closestEvent);
 var isSameWeek = dayjs().isSame(dayjs(closestEvent.start_date),"week")
-
-const date = new Date(closestEvent.start_date);
+console.log(eventSchedule);
 
 // Format the date as DD-MM-YYYY
 const formattedStartDate = formatDate(closestEvent.start_date);
@@ -62,19 +61,18 @@ function formatDate(isoTimestamp : any) {
     return `${day}/${month}/${year}`;
 }
 
-function formatHour(isoTimestamp : any) {
-    // Convert the ISO timestamp to a Date object
-    const date = new Date(isoTimestamp);
+function formatHour(dateString : any) {
+  const date = new Date(dateString);
+  // Function to pad single digit numbers with leading zero
+  const padZero = (num:any) => (num < 10 ? '0' + num : num);
+  // Get local date components
+  const day = padZero(date.getDate());
+  const month = padZero(date.getMonth() + 1); // Months are zero-based
+  const year = date.getFullYear();
+  const hours = padZero(date.getHours());
+  const minutes = padZero(date.getMinutes());
 
-    // Extract the day, month, and year
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-indexed
-    const year = date.getUTCFullYear();
-    const hour = String(date.getUTCHours()).padStart(2, '0');
-    const minute = String(date.getUTCMinutes()).padStart(2, '0');
-
-    // Format the date as DD-MM-YYYY
-    return `${day}/${month}/${year} ${hour}:${minute}`;
+  return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 ---
 <section class="bg-black p-10">
