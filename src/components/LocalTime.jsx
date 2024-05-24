@@ -2,18 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 
-const LocalTime = ({ dateString, className,onlyDate = false }) => {
+const LocalTime = ({ dateString, className,onlyDate = false, showDate = true}) => {
   const [formattedDate, setFormattedDate] = useState('');
 
   useEffect(() => {
     console.log(onlyDate)
-    setFormattedDate(formatDateToLocalTime(dateString, onlyDate));
+    setFormattedDate(formatDateToLocalTime(dateString, onlyDate, showDate));
   }, [dateString]);
 
   return <span className={className}>{formattedDate}</span>;
 };
 
-function formatDateToLocalTime(dateString, onlyDate = false) {
+function formatDateToLocalTime(dateString, onlyDate = false, showDate = true) {
     // Parse the date string into a Date object
     const date = new Date(dateString);
   
@@ -38,7 +38,8 @@ function formatDateToLocalTime(dateString, onlyDate = false) {
     const dayOfWeek = date.toDateString().slice(0, 3);
     
 
-    return `${dayOfWeek} ${day}/${month}/${year} ${hours}:${minutes}`;
+    return showDate ? `${dayOfWeek} ${day}/${month}/${year} ${hours}:${minutes}`
+     : `${dayOfWeek} ${hours}:${minutes}`;
   }
 
 export default LocalTime;
