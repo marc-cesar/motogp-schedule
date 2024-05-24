@@ -34,8 +34,10 @@ const fetchEventSchedule = async (eventId : any) => {
 
 const closestEvent = await fetchEvents();
 const eventSchedule = await fetchEventSchedule(closestEvent.id);
+console.log(eventSchedule);
 const mainEvents = eventSchedule.sessions.filter((session : any) => session.class === 'MotoGP');
 const fp1 = mainEvents.find((session : any) => session.session_short_name === 'FP1');
+const practice = mainEvents.find((session : any) => session.session_short_name === 'PR');
 const fp2 = mainEvents.find((session : any) => session.session_short_name === 'FP2');
 const q1 = mainEvents.find((session : any) => session.session_short_name === 'Q1');
 const q2 = mainEvents.find((session : any) => session.session_short_name === 'Q2');
@@ -69,6 +71,7 @@ function formatDate(isoTimestamp : any) {
                 </div>
                 <div class="flex flex-col text-center items-center md:border-l flex-1 p-4 md:h-full w-full">
                     <p class="text-white text-lg">FP1: <LocalTime onlyDate={false} className="text-white text-lg" dateString={fp1?.start_datetime_local} client:load/></p>
+                    <p class="text-white text-lg">Practice: <LocalTime onlyDate={false} className="text-white text-lg" dateString={practice?.start_datetime_local} client:load/></p>
                     <p class="text-white text-lg">FP2: <LocalTime onlyDate={false} className="text-white text-lg" dateString={fp2?.start_datetime_local} client:load/></p>
                     <p class="text-white text-lg">Q1: <LocalTime onlyDate={false} className="text-white text-lg" dateString={q1?.start_datetime_local} client:load/></p>
                     <p class="text-white text-lg">Q2: <LocalTime onlyDate={false} className="text-white text-lg" dateString={q2?.start_datetime_local} client:load/></p>
