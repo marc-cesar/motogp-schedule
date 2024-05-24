@@ -34,7 +34,11 @@ function formatDateToLocalTime(dateString, onlyDate = false) {
     const minutes = padZero(date.getMinutes());
   
     // Format the date and time as dd/MM/yyyy hh:mm
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
+    // Get the first three letters of the day of the week from the Date object
+    const dayOfWeek = date.toDateString().slice(0, 3);
+    
+
+    return `${dayOfWeek} ${day}/${month}/${year} ${hours}:${minutes}`;
   }
 
 export default LocalTime;

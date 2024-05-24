@@ -45,20 +45,6 @@ const sprint = mainEvents.find((session : any) => session.session_short_name ===
 const race = mainEvents.find((session : any) => session.session_short_name === 'RAC');
 
 var isSameWeek = dayjs().isSame(dayjs(closestEvent.start_date),"week")
-
-function formatDate(isoTimestamp : any) {
-    // Convert the ISO timestamp to a Date object
-    const date = new Date(isoTimestamp);
-
-    // Extract the day, month, and year
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-indexed
-    const year = date.getUTCFullYear();
-
-    // Format the date as DD-MM-YYYY
-    return `${day}/${month}/${year}`;
-}
-
 ---
 <section class="bg-black p-10">
     <div class="min-h-52 flex flex-col w-full justify-center">
