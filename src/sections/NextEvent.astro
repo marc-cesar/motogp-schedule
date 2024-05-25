@@ -34,7 +34,6 @@ const fetchEventSchedule = async (eventId : any) => {
 
 const closestEvent = await fetchEvents();
 const eventSchedule = await fetchEventSchedule(closestEvent.id);
-console.log(eventSchedule);
 const mainEvents = eventSchedule.sessions.filter((session : any) => session.class === 'MotoGP');
 const fp1 = mainEvents.find((session : any) => session.session_short_name === 'FP1');
 const practice = mainEvents.find((session : any) => session.session_short_name === 'PR');
@@ -48,7 +47,7 @@ var isSameWeek = dayjs().isSame(dayjs(closestEvent.start_date),"week")
 ---
 <section class="bg-black p-10">
     <div class="min-h-52 flex flex-col w-full justify-center">
-            <h2 class="w-full text-white pb-10 font-semibold text-4xl uppercase text-center">Next event</h2>
+            <h2 class="w-full text-white pb-10 font-semibold text-4xl uppercase text-center">Next Grand Prix</h2>
             <div class="flex flex-col md:flex-row flex-grow justify-center items-start w-full max-w-screen-xl mx-auto">
                 <div class="flex flex-col items-center flex-1 p-4 border-b md:border-b-0 border-gray-500 md:h-full">
                     <h3 class="text-white text-3xl text-center pb-3 font-semibold">{closestEvent.name ?? ""}</h3>
