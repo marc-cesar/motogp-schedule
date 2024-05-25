@@ -7,6 +7,8 @@ interface Rider {
     color: string;
 }
 
+const imageNotFound = false;
+
 const fetchClassification = async () => {
     try {
         const response = await fetch(
@@ -60,30 +62,53 @@ const getTextColor = (backgroundColor: string) => {
   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
   return brightness > 128 ? 'text-black' : 'text-white';
 };
+
+const errorImageNotFound = (
+    event: Event,
+    image: HTMLImageElement,
+    imageNotFound: boolean,
+) => {
+    imageNotFound = true;
+    image.style.display = 'none';
+    console.error('Image not found');
+    return imageNotFound;
+
+};
+
 ---
 <section class="bg-white pt-10 md:mx-20">
     <div class="text-center text-2xl font-bold pb-5">MotoGP Standings</div>
     <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th class="pl-2 text-center py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Pos.</th>
-            <th class="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Number</th>
-            <th class="py-3 pl-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-            <th class="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Team</th>
-            <th class="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Points</th>
+            <th class="text-center py-3 text-xs font-medium text-gray-500 uppercase tracking-wider" >Pos </th>
+            <th class="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style="width:3%"> Number</th>
+            <th class="py-3 pl-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+            <th class="py-3 pl-7 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+            <th class="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Team</th>
+            <th class="pr-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Points</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           {standings.map((rider,index) => (
             <tr id={rider.number} class="hover:bg-gray-100">
               <td class="py-4 whitespace-nowrap md:text-xl text-center text-sm font-medium text-gray-900">{index + 1}</td>
-              <td class="flex py-4 px-2 whitespace-nowrap text-center justify-center text-sm font-medium text-gray-900">
-                <div class={`w-10 text-sm lg:text-xl h-full flex font-black items-center justify-center rounded ${getTextColor(rider.color)}`} style={`background-color: ${rider.color}`}>
+              <td class="py-2 h-14 w-10 whitespace-nowrap text-center text-sm font-medium text-gray-900">
+                <div class={`w-10 md:w-14 text-xl md:text-2xl lg:text-3xl h-full flex font-black items-center justify-center rounded ${getTextColor(rider.color)}`} style={`background-color: ${rider.color}`}>
                   {rider.number}
                 </div>
             </td>
-              <td class="pl-3 py-4 whitespace-nowrap text-base md:text-xl font-bold text-gray-500">{rider.name}</td>
-              <td class="py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">{rider.team}</td>
+            {imageNotFound ? (
+              <p>No image found with the given prefix</p>
+              ) : (
+              <td class="w-14 whitespace-nowrap text-base md:text-xl font-bold text-gray-500">
+                <div class="sm:w-16 max-w-xs overflow-hidden relative">
+                  <img class="object-cover transform image-translate" src={`/assets/riders/${rider.number}.png`} onerror="this.hide">
+                </div>
+                </td>
+            )}
+              <td class="pl-7 py-4 whitespace-nowrap text-base md:text-xl font-bold text-gray-500">{rider.name}</td>
+              <td class="py-4 whitespace-nowrap text-xl text-gray-400 hidden lg:table-cell">{rider.team}</td>
               <td class="py-4 whitespace-nowrap text-center md:text-xl text-gray-500 font-black">{rider.points}</td>
             </tr>
           ))}
@@ -91,3 +116,24 @@ const getTextColor = (backgroundColor: string) => {
       </table>
     </div>
 </section>
+<style>
+        .image-scale {
+            scale: 3;
+        }
+        @media (max-width: 389px) {
+            .image-translate {
+                transform: translate(0.3rem, 4rem) scale(4);
+            }
+        }
+
+        @media (min-width:390px) and (max-width: 400px) {
+            .image-translate {
+                transform: translate(0, 3.5rem) scale(2.5);
+            }
+        }
+        @media (min-width: 401px) {
+            .image-translate {
+                transform: translate(0.2rem, 5.0rem) scale(2.5);
+            }
+        }
+    </style>
