@@ -93,7 +93,7 @@ const errorImageNotFound = (
           {standings.map((rider,index) => (
             <tr id={rider.number} class="hover:bg-gray-100">
               <td class="py-4 whitespace-nowrap md:text-xl text-center text-sm font-medium text-gray-900">{index + 1}</td>
-              <td class="py-2 h-14 w-10 whitespace-nowrap text-center text-sm font-medium text-gray-900">
+              <td class="py-2 h-14 w-5 sm:w-10 whitespace-nowrap text-center text-sm font-medium text-gray-900">
                 <div class={`w-10 md:w-14 text-xl md:text-2xl lg:text-3xl h-full flex font-black items-center justify-center rounded ${getTextColor(rider.color)}`} style={`background-color: ${rider.color}`}>
                   {rider.number}
                 </div>
@@ -101,13 +101,13 @@ const errorImageNotFound = (
             {imageNotFound ? (
               <p>No image found with the given prefix</p>
               ) : (
-              <td class="w-14 whitespace-nowrap text-base md:text-xl font-bold text-gray-500">
-                <div class="sm:w-16 max-w-xs overflow-hidden relative">
+              <td class="w-5 whitespace-nowrap text-base md:text-xl font-bold text-gray-500">
+                <div class="w-10 lg:w-20 max-h-28 max-w-xs overflow-hidden relative">
                   <img class="object-cover transform image-translate" src={`/assets/riders/${rider.number}.png`} onerror="this.hide">
                 </div>
                 </td>
             )}
-              <td class="pl-7 py-4 whitespace-nowrap text-base md:text-xl font-bold text-gray-500">{rider.name}</td>
+              <td class="sm:pl-7 py-4 whitespace-nowrap text-base md:text-xl font-bold text-gray-500">{rider.name}</td>
               <td class="py-4 whitespace-nowrap text-xl text-gray-400 hidden lg:table-cell">{rider.team}</td>
               <td class="py-4 whitespace-nowrap text-center md:text-xl text-gray-500 font-black">{rider.points}</td>
             </tr>
@@ -117,23 +117,10 @@ const errorImageNotFound = (
     </div>
 </section>
 <style>
-        .image-scale {
-            scale: 3;
-        }
-        @media (max-width: 389px) {
-            .image-translate {
-                transform: translate(0.3rem, 4rem) scale(4);
-            }
+
+        .image-translate {
+            transform-origin: top center;
+            transform: scale(2);
         }
 
-        @media (min-width:390px) and (max-width: 400px) {
-            .image-translate {
-                transform: translate(0, 3.5rem) scale(2.5);
-            }
-        }
-        @media (min-width: 401px) {
-            .image-translate {
-                transform: translate(0.2rem, 5.0rem) scale(2.5);
-            }
-        }
     </style>
