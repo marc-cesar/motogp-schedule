@@ -215,13 +215,13 @@ const StandingsAndResults: React.FC = () => {
                         <th className="py-3 pl-7 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                         <th className="py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Team</th>
                         {!isStandings ? null : 
-                            <th className="pr-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Points
                             </th>
                         }
 
                         {isStandings ? null : (
-                            <th className="pr-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 {isTimedSession ? 'Time' : 'Gap to Leader'}
                             </th>
                         )}
