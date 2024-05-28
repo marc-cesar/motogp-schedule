@@ -6,7 +6,6 @@ const LocalTime = ({ dateString, className,onlyDate = false, showDate = true}) =
   const [formattedDate, setFormattedDate] = useState('');
 
   useEffect(() => {
-    console.log(onlyDate)
     setFormattedDate(formatDateToLocalTime(dateString, onlyDate, showDate));
   }, [dateString]);
 

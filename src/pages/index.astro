@@ -1,17 +1,17 @@
 ---
+import StandingsAndResults from '../components/StandingsAndResults';
 import Layout from '../layouts/Layout.astro';
 
-import Classification from '../sections/Classification.astro';
 import Footer from '../sections/footer.astro';
-import NextEvent from '../sections/NextEvent.astro';
+import NextEvent from '../components/NextEvent';
 import Title from '../sections/title.astro';
 ---
 
 <Layout title="MotoGP Schedules">
   <main>
     <Title title="MotoGP Schedules" />
-    <NextEvent/>
-    <Classification/>
+    <NextEvent client:load/>
+    <StandingsAndResults client:load/>
   </main>
   <Footer />
 </Layout>
