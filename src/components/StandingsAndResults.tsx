@@ -243,7 +243,7 @@ const StandingsAndResults: React.FC = () => {
                             </td>
                             {missingImages.has(rider.number) ? (
                                 <td className="w-5 whitespace-nowrap text-base md:text-xl font-bold text-gray-500">
-                                    <p>No image found with the given prefix</p>
+                                    
                                 </td>
                             ) : (
                                 <td className="w-5 whitespace-nowrap text-base md:text-xl font-bold text-gray-500">
