@@ -59,7 +59,7 @@ const StandingsAndResults: React.FC = () => {
                 // Fetch all events for the dropdown
                 const last_race_name = results_data.data[results_data.data.length - 1].race.shortname;
                 console.log('last_race_name:', results_data.data[results_data.data.length - 1]);
-                const results_response = await fetch(`https://mototiming.live/api/results?q_season=2024&q_event=${last_race_name}&q_category=MotoGP&q_session=RAC`);
+                const results_response = await fetch(`https://mototiming.live/api/results?q_season=2025&q_event=${last_race_name}&q_category=MotoGP&q_session=RAC`);
                 const results_json = await results_response.json();
                 console.log('Events:', results_json);
 
@@ -81,7 +81,7 @@ const StandingsAndResults: React.FC = () => {
             if (!selectedEvent) return;
 
             try {
-                const results_response = await fetch(`https://mototiming.live/api/results?q_season=2024&q_event=${selectedEvent}&q_category=MotoGP&q_session=${selectedSession}`);
+                const results_response = await fetch(`https://mototiming.live/api/results?q_season=2025&q_event=${selectedEvent}&q_category=MotoGP&q_session=${selectedSession}`);
                 const results_json = await results_response.json();
                 console.log('Results:', results_json);
 
