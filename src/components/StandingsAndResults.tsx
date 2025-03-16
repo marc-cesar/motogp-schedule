@@ -179,7 +179,7 @@ const StandingsAndResults: React.FC = () => {
                 <div className='flex flex-col md:flex-row items-center pb-5 space-y-4 md:space-y-0 md:space-x-8'>
                 <div className='flex items-center space-x-3'>
                     <label htmlFor="event-select" className="text-lg font-bold">GP:</label>
-                    <select id="event-select" value={selectedEvent} onChange={handleEventChange} className="border p-2 rounded max-w-52 xl:max-w-none">
+                    <select id="event-select" value={selectedEvent} onChange={handleEventChange} className="border p-2 rounded max-w-52 xl:max-w-80 truncate">
                         {allEvents.map((event) => (
                             <option key={event.shortname} value={event.shortname}>{event.name}</option>
                         ))}
