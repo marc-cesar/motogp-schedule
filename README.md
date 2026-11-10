@@ -48,6 +48,20 @@ All commands are run from the root of the project, from a terminal:
 | `npm run preview`         | Preview your build locally, before deploying     |
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
+| `npm run photos`          | Downloads missing rider photos (see below)       |
+| `npm run photos -- --all` | Re-downloads every rider photo                   |
+
+## 🏍️ Rider photos
+
+Rider photos live in `public/assets/riders/{number}.png` (200×300). They are downloaded from the
+official MotoGP API with `scripts/update-rider-photos.mjs`, which resizes the originals (~4 MB each).
+
+- `npm run photos` downloads photos only for current-season riders that don't have one yet.
+  Run it when a new rider or substitute joins the grid, then commit the new images.
+- `npm run photos -- --all` re-downloads every rider's photo, e.g. at the start of a season
+  when there are new photos and leathers.
+
+If a number is shared by a regular rider and a substitute, the regular rider's photo is used.
 
 ## 👀 Want to learn more?
 
