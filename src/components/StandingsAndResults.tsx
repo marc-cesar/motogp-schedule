@@ -1,116 +1,50 @@
 import React, { useEffect, useState } from 'react';
-
-interface Rider {
-    number: string;
-    name: string;
-    team: string;
-    points: number;
-    color: string;
-    time: string;
-    gap_to_leader: string;
-    best_lap: string;
-    position: string; 
-}
+import {
+    fetchFinishedEvents,
+    fetchSessionResults,
+    fetchStandings,
+    type RaceEvent,
+    type Rider,
+} from '../lib/motogp';
 
 const StandingsAndResults: React.FC = () => {
     const [standings, setStandings] = useState<Rider[]>([]);
     const [isStandings, setIsStandings] = useState(true);
     const [selectedSession, setSelectedSession] = useState('RAC');
     const [selectedEvent, setSelectedEvent] = useState('');
-    const [allEvents, setAllEvents] = useState<any[]>([]);
+    const [allEvents, setAllEvents] = useState<RaceEvent[]>([]);
     const [results, setResults] = useState<Rider[]>([]);
     const [missingImages, setMissingImages] = useState<Set<string>>(new Set());
     const [isTimedSession, setIsTimedSession] = useState(false);
 
     useEffect(() => {
-        const fetchStandings = async () => {
-            try {
-                const response = await fetch("https://mototiming.live/api/stat/standings-stats?class=MotoGP");
-                if (!response.ok) {
-                    throw new Error(`Network response was not ok: ${response.statusText}`);
-                }
-                const results_data = await response.json();
-                console.log('Standings:', results_data);
-                const classification = results_data.data.find(
-                    (r: any) => r.race.name === results_data.last_race,
-                );
+        fetchStandings()
+            .then(setStandings)
+            .catch((error) => console.error('Error fetching standings:', error));
 
-                const standings = classification.ranking
-                    .map((rider_number: string) => {
-                        const rider: any = Object.values(classification.riders).find(
-                            (r: any) => r.number === rider_number,
-                        );
-                        return rider
-                            ? {
-                                    number: rider.number,
-                                    name: rider.name,
-                                    team: rider.team,
-                                    points: rider.season.points.total,
-                                    color: rider.color,
-                                    time: '',
-                                    gap_to_leader: '',
-                                }
-                            : null;
-                    })
-                    .filter((rider: any): rider is Rider => rider !== null);
-
-                setStandings(standings);
-                
-                // Fetch all events for the dropdown
-                const last_race_name = results_data.data[results_data.data.length - 1].race.shortname;
-                console.log('last_race_name:', results_data.data[results_data.data.length - 1]);
-                const results_response = await fetch(`https://mototiming.live/api/results?q_season=2025&q_event=${last_race_name}&q_category=MotoGP&q_session=RAC`);
-                const results_json = await results_response.json();
-                console.log('Events:', results_json);
-
-                setAllEvents(results_json.events.toReversed());
-                setSelectedEvent(results_json.events.toReversed()[0].shortname);  // Set initial selected event
-                console.log('Mapped events:', mapResults(results_json.classifications));
-                setResults(mapResults(results_json.classifications));
-                
-            } catch (error) {
-                console.error("Error fetching events:", error);
-            }
-        };
-
-        fetchStandings();
+        fetchFinishedEvents()
+            .then((events) => {
+                setAllEvents(events);
+                if (events.length > 0) setSelectedEvent(events[0].id);
+            })
+            .catch((error) => console.error('Error fetching events:', error));
     }, []);
 
     useEffect(() => {
-        const fetchResults = async () => {
-            if (!selectedEvent) return;
+        if (!selectedEvent) return;
 
-            try {
-                const results_response = await fetch(`https://mototiming.live/api/results?q_season=2025&q_event=${selectedEvent}&q_category=MotoGP&q_session=${selectedSession}`);
-                const results_json = await results_response.json();
-                console.log('Results:', results_json);
-
-                setResults(mapResults(results_json.classifications));
-            } catch (error) {
-                console.error("Error fetching results:", error);
-            }
+        let cancelled = false;
+        fetchSessionResults(selectedEvent, selectedSession)
+            .then((riders) => {
+                if (!cancelled) setResults(riders);
+            })
+            .catch((error) => console.error('Error fetching results:', error));
+        return () => {
+            cancelled = true;
         };
-
-        fetchResults();
     }, [selectedSession, selectedEvent]);
 
-    const mapResults = (classifications: any) => {
-        return classifications.map((rider: any) => {
-            return {
-                number: rider.rider_number,
-                name: rider.rider_name,
-                team: rider.team_name,
-                points: rider.points,
-                color: rider.color,
-                time: rider.time,
-                gap_to_leader: rider.gap_first,
-                best_lap: rider.best_lap_time,
-                position: rider.position
-            };
-        });
-    };
-
-    const getTextColor = (backgroundColor: string) => {
+    const getTextColor = (backgroundColor: string | null) => {
         if (backgroundColor == null) return 'text-black';
         const hex = backgroundColor.replace('#', '');
         const r = parseInt(hex.substring(0, 2), 16);
@@ -181,7 +115,7 @@ const StandingsAndResults: React.FC = () => {
                     <label htmlFor="event-select" className="text-lg font-bold">GP:</label>
                     <select id="event-select" value={selectedEvent} onChange={handleEventChange} className="border p-2 rounded max-w-52 xl:max-w-80 truncate">
                         {allEvents.map((event) => (
-                            <option key={event.shortname} value={event.shortname}>{event.name}</option>
+                            <option key={event.id} value={event.id}>{event.name}</option>
                         ))}
                     </select>
                 </div>
@@ -236,7 +170,7 @@ const StandingsAndResults: React.FC = () => {
                             <td className="py-2 h-14 w-5 sm:w-10 whitespace-nowrap text-center text-sm font-medium text-gray-900">
                                 <div
                                     className={`w-10 md:w-14 text-xl md:text-2xl lg:text-3xl h-full flex font-black items-center justify-center rounded ${getTextColor(rider.color)}`}
-                                    style={{ backgroundColor: rider.color }}
+                                    style={{ backgroundColor: rider.color ?? undefined }}
                                 >
                                     {rider.number}
                                 </div>

@@ -1,59 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import LocalTime from '../components/LocalTime.jsx';
-
-const fetchEvents = async () => {
-  try {
-    const response = await fetch('https://mototiming.live/api/schedule?filter=upcoming');
-    if (!response.ok) {
-      throw new Error(`Network response was not ok: ${response.statusText}`);
-    }
-    const data = await response.json();
-    return data.calendar[0];
-  } catch (error) {
-    console.error('Error fetching events:', error);
-    return [];
-  }
-};
-
-const fetchEventSchedule = async (eventId) => {
-  try {
-    const response = await fetch(`https://mototiming.live/api/schedule?event=${eventId}`);
-    if (!response.ok) {
-      throw new Error(`Network response was not ok: ${response.statusText}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching event schedule:', error);
-    return [];
-  }
-};
+import { fetchUpcomingEvent } from '../lib/motogp';
 
 const NextGrandPrix = () => {
   const [closestEvent, setClosestEvent] = useState(null);
-  const [eventSchedule, setEventSchedule] = useState([]);
-  const [mainEvents, setMainEvents] = useState([]);
   const [isSameWeek, setIsSameWeek] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const event = await fetchEvents();
-      setClosestEvent(event);
-      if (event && event.id) {
-        const schedule = await fetchEventSchedule(event.id);
-        setEventSchedule(schedule.sessions || []);
-        const mainEvents = schedule.sessions.filter(session => session.class === 'MotoGP');
-        setMainEvents(mainEvents);
-        setIsSameWeek(dayjs().isSame(dayjs(event.start_date), "week"));
-      }
-    };
-    fetchData();
+    fetchUpcomingEvent()
+      .then((event) => {
+        setClosestEvent(event);
+        if (event) setIsSameWeek(dayjs().isSame(dayjs(event.start_date), 'week'));
+      })
+      .catch((error) => console.error('Error fetching next event:', error));
   }, []);
 
-  const getSession = (shortName) => {
-    return mainEvents.find(session => session.session_short_name === shortName);
-  };
+  const getSessionStart = (shortName) => closestEvent?.sessions[shortName];
 
   return (
     <section className="bg-black p-10">
@@ -70,13 +33,13 @@ const NextGrandPrix = () => {
                   <p className="text-4xl text-red-500">{isSameWeek ? "RACE WEEK" : ""}</p>
                 </div>
                 <div className="flex flex-col text-center items-center md:border-l flex-1 p-4 md:h-full w-full">
-                  <p className="text-white text-lg">FP1: <LocalTime onlyDate={false} showDate={false} className="text-white text-lg" dateString={getSession('FP1')?.start_datetime_local} client:load /></p>
-                  <p className="text-white text-lg">Practice: <LocalTime onlyDate={false} showDate={false} className="text-white text-lg" dateString={getSession('PR')?.start_datetime_local} client:load /></p>
-                  <p className="text-white text-lg">FP2: <LocalTime onlyDate={false} showDate={false} className="text-white text-lg" dateString={getSession('FP2')?.start_datetime_local} client:load /></p>
-                  <p className="text-white text-lg">Q1: <LocalTime onlyDate={false} showDate={false} className="text-white text-lg" dateString={getSession('Q1')?.start_datetime_local} client:load /></p>
-                  <p className="text-white text-lg">Q2: <LocalTime onlyDate={false} showDate={false} className="text-white text-lg" dateString={getSession('Q2')?.start_datetime_local} client:load /></p>
-                  <p className="text-white text-lg">Sprint: <LocalTime onlyDate={false} showDate={false} className="text-white text-lg" dateString={getSession('SPR')?.start_datetime_local} client:load /></p>
-                  <p className="text-white text-lg">Race: <LocalTime onlyDate={false} showDate={false} className="text-white text-lg" dateString={getSession('RAC')?.start_datetime_local} client:load /></p>
+                  <p className="text-white text-lg">FP1: <LocalTime onlyDate={false} showDate={false} className="text-white text-lg" dateString={getSessionStart('FP1')} client:load /></p>
+                  <p className="text-white text-lg">Practice: <LocalTime onlyDate={false} showDate={false} className="text-white text-lg" dateString={getSessionStart('PR')} client:load /></p>
+                  <p className="text-white text-lg">FP2: <LocalTime onlyDate={false} showDate={false} className="text-white text-lg" dateString={getSessionStart('FP2')} client:load /></p>
+                  <p className="text-white text-lg">Q1: <LocalTime onlyDate={false} showDate={false} className="text-white text-lg" dateString={getSessionStart('Q1')} client:load /></p>
+                  <p className="text-white text-lg">Q2: <LocalTime onlyDate={false} showDate={false} className="text-white text-lg" dateString={getSessionStart('Q2')} client:load /></p>
+                  <p className="text-white text-lg">Sprint: <LocalTime onlyDate={false} showDate={false} className="text-white text-lg" dateString={getSessionStart('SPR')} client:load /></p>
+                  <p className="text-white text-lg">Race: <LocalTime onlyDate={false} showDate={false} className="text-white text-lg" dateString={getSessionStart('RAC')} client:load /></p>
                 </div>
               </div>
 
