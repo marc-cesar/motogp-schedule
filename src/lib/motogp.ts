@@ -55,10 +55,28 @@ const getContext = memo(async () => {
     return { seasonId: season.id as string, year: season.year as number, categoryId: category.id as string };
 });
 
+// The API sends this dark grey as a placeholder for teams it has no colour for.
+const PLACEHOLDER_COLOR = '#262626';
+
+// Fallback colours for teams the API returns the placeholder for, matched by team name.
+const TEAM_COLOR_FALLBACKS: [RegExp, string][] = [
+    [/VR46/i, '#f5d300'],
+    [/Pramac/i, '#3d4fc4'],
+    [/Tech3/i, '#1b2a5c'],
+    [/Trackhouse/i, '#2f7de1'],
+    [/Yamaha/i, '#0a2d82'],
+];
+
+const teamColor = (team: any): string | null => {
+    const color: string | undefined = team.color;
+    if (color && color.toLowerCase() !== PLACEHOLDER_COLOR) return color;
+    return TEAM_COLOR_FALLBACKS.find(([re]) => re.test(team.name ?? ''))?.[1] ?? color ?? null;
+};
+
 // Team colours by rider number (the results endpoints don't include them).
 const getRiderColors = memo(async () => {
     const { year } = await getContext();
-    const colors = new Map<string, string>();
+    const colors = new Map<string, string | null>();
     try {
         const categories: any[] = await get(`categories?seasonYear=${year}`);
         const category = categories.find((c) => c.legacy_id === MOTOGP_LEGACY_ID);
@@ -69,7 +87,7 @@ const getRiderColors = memo(async () => {
                 if (step?.number == null) continue;
                 // Substitutes can reuse a regular rider's number; the regular rider wins.
                 if (step.type === 'Substitute' && colors.has(String(step.number))) continue;
-                colors.set(String(step.number), team.color);
+                colors.set(String(step.number), teamColor(team));
             }
         }
     } catch (error) {
@@ -133,7 +151,7 @@ export const fetchFinishedEvents = async (): Promise<RaceEvent[]> => {
 // sessionCode is one of RAC, SPR, WUP, Q2, Q1, FP2, PR, FP1.
 export const fetchSessionResults = async (eventId: string, sessionCode: string): Promise<Rider[]> => {
     const { categoryId } = await getContext();
-    const [sessions, colors]: [any[], Map<string, string>] = await Promise.all([
+    const [sessions, colors]: [any[], Map<string, string | null>] = await Promise.all([
         get(`results/sessions?eventUuid=${eventId}&categoryUuid=${categoryId}`),
         getRiderColors(),
     ]);
