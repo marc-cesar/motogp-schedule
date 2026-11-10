@@ -65,8 +65,11 @@ const getRiderColors = memo(async () => {
         const teams: any[] = await get(`teams?categoryUuid=${category.id}&seasonYear=${year}`);
         for (const team of teams) {
             for (const rider of team.riders ?? []) {
-                const number = rider.current_career_step?.number;
-                if (number != null) colors.set(String(number), team.color);
+                const step = rider.current_career_step;
+                if (step?.number == null) continue;
+                // Substitutes can reuse a regular rider's number; the regular rider wins.
+                if (step.type === 'Substitute' && colors.has(String(step.number))) continue;
+                colors.set(String(step.number), team.color);
             }
         }
     } catch (error) {
