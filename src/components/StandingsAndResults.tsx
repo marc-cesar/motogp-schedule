@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Spinner from './Spinner';
 import {
     fetchFinishedEvents,
     fetchSessionResults,
@@ -16,29 +17,38 @@ const StandingsAndResults: React.FC = () => {
     const [results, setResults] = useState<Rider[]>([]);
     const [missingImages, setMissingImages] = useState<Set<string>>(new Set());
     const [isTimedSession, setIsTimedSession] = useState(false);
+    const [loadingStandings, setLoadingStandings] = useState(true);
+    const [loadingEvents, setLoadingEvents] = useState(true);
+    const [loadingResults, setLoadingResults] = useState(false);
 
     useEffect(() => {
         fetchStandings()
             .then(setStandings)
-            .catch((error) => console.error('Error fetching standings:', error));
+            .catch((error) => console.error('Error fetching standings:', error))
+            .finally(() => setLoadingStandings(false));
 
         fetchFinishedEvents()
             .then((events) => {
                 setAllEvents(events);
                 if (events.length > 0) setSelectedEvent(events[0].id);
             })
-            .catch((error) => console.error('Error fetching events:', error));
+            .catch((error) => console.error('Error fetching events:', error))
+            .finally(() => setLoadingEvents(false));
     }, []);
 
     useEffect(() => {
         if (!selectedEvent) return;
 
         let cancelled = false;
+        setLoadingResults(true);
         fetchSessionResults(selectedEvent, selectedSession)
             .then((riders) => {
                 if (!cancelled) setResults(riders);
             })
-            .catch((error) => console.error('Error fetching results:', error));
+            .catch((error) => console.error('Error fetching results:', error))
+            .finally(() => {
+                if (!cancelled) setLoadingResults(false);
+            });
         return () => {
             cancelled = true;
         };
@@ -77,6 +87,9 @@ const StandingsAndResults: React.FC = () => {
         setSelectedEvent(event.target.value);
     };
 
+
+    const rows = isStandings ? standings : results;
+    const isLoading = isStandings ? loadingStandings : loadingEvents || loadingResults;
 
     return (
         <section className="bg-white pt-10 md:mx-20">
@@ -132,11 +145,26 @@ const StandingsAndResults: React.FC = () => {
                         <option value="FP1">FP1</option>
                     </select>
                 </div>
+                {isLoading ? (
+                    <div className="flex items-center space-x-2 text-red-500 font-bold" role="status">
+                        <Spinner className="w-5 h-5" />
+                        <span>Loading…</span>
+                    </div>
+                ) : null}
             </div>
             )            
             : ''}
 
-            <table className="min-w-full divide-y divide-gray-200">
+            <div className="relative" aria-busy={isLoading}>
+            {isLoading && rows.length > 0 ? (
+                <div className="absolute inset-0 z-10 flex justify-center pt-24 pointer-events-none">
+                    <div className="flex items-center space-x-3 bg-white shadow-lg rounded-full px-5 py-3 text-red-500 font-bold h-fit">
+                        <Spinner className="w-6 h-6" />
+                        <span>Loading…</span>
+                    </div>
+                </div>
+            ) : null}
+            <table className={`min-w-full divide-y divide-gray-200 transition-opacity duration-200 ${isLoading && rows.length > 0 ? 'opacity-40' : ''}`}>
                 <thead className="bg-gray-50">
                     <tr>
                         <th className="text-center py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -162,7 +190,24 @@ const StandingsAndResults: React.FC = () => {
                     </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                    {(isStandings ? standings : results).map((rider, index) => (
+                    {isLoading && rows.length === 0 ? (
+                        <tr>
+                            <td colSpan={6} className="py-16">
+                                <div className="flex flex-col items-center space-y-3 text-red-500 font-bold" role="status">
+                                    <Spinner className="w-10 h-10" />
+                                    <span>Loading…</span>
+                                </div>
+                            </td>
+                        </tr>
+                    ) : null}
+                    {!isLoading && rows.length === 0 ? (
+                        <tr>
+                            <td colSpan={6} className="py-16 text-center text-gray-400 font-bold">
+                                No data available
+                            </td>
+                        </tr>
+                    ) : null}
+                    {rows.map((rider, index) => (
                         <tr id={rider.number} className="hover:bg-gray-100" key={rider.number}>
                             <td className="py-4 whitespace-nowrap md:text-xl text-center text-sm font-medium text-gray-900">
                                 {index + 1}
@@ -210,6 +255,7 @@ const StandingsAndResults: React.FC = () => {
                     ))}
                 </tbody>
             </table>
+            </div>
         </section>
     );
 };
