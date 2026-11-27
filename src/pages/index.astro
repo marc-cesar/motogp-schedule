@@ -5,11 +5,13 @@ import Layout from '../layouts/Layout.astro';
 import Footer from '../sections/footer.astro';
 import NextEvent from '../components/NextEvent';
 import Title from '../sections/title.astro';
+import ThankYouMarc from '../sections/thank-you-marc.astro'; // Thank you Marc (temporary)
 ---
 
 <Layout title="MotoGP Schedules">
   <main>
     <Title title="MotoGP Schedules" />
+    <ThankYouMarc /> {/* Thank you Marc (temporary) */}
     <NextEvent client:load/>
     <StandingsAndResults client:load/>
   </main>
